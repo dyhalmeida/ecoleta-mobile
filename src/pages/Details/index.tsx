@@ -6,6 +6,7 @@ import {
   Image,
   Text,
   SafeAreaView,
+  Linking,
 } from "react-native";
 import { Feather as Icon, FontAwesome } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -30,6 +31,12 @@ const Details = () => {
 
   const handleNavigateBack = () => {
     navigation.goBack();
+  };
+
+  const handleWhatsapp = () => {
+    Linking.openURL(
+      `whatsapp://send?phone=${data.point.whatsapp}&text=Tenho interesse sobre a coleta de resíduos`
+    );
   };
 
   const handleComposerMail = () => {
@@ -67,7 +74,7 @@ const Details = () => {
         </View>
       </View>
       <View style={styles.footer}>
-        <RectButton style={styles.button} onPress={() => {}}>
+        <RectButton style={styles.button} onPress={handleWhatsapp}>
           <FontAwesome name="whatsapp" color="#ffffff" size={24} />
           <Text style={styles.buttonText}>Whatsapp</Text>
         </RectButton>
