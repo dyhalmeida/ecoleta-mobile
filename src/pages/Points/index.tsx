@@ -5,9 +5,10 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import Constants from "expo-constants";
 import { SvgUri } from "react-native-svg";
 import { Feather as Icon } from "@expo/vector-icons";
@@ -16,6 +17,10 @@ const Points = () => {
   const navigation = useNavigation();
   const handleNavigateBack = () => {
     navigation.goBack();
+  };
+
+  const handleNavigateToDetail = () => {
+    navigation.navigate("Details");
   };
 
   return (
@@ -31,7 +36,32 @@ const Points = () => {
         </Text>
 
         <View style={styles.mapContainer}>
-          <MapView style={styles.map} />
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: -12.5317127,
+              longitude: -38.2966778,
+              latitudeDelta: 0.014,
+              longitudeDelta: 0.014,
+            }}
+          >
+            <Marker
+              style={styles.mapMarker}
+              coordinate={{ latitude: -12.5317127, longitude: -38.2966778 }}
+              onPress={handleNavigateToDetail}
+            >
+              <View style={styles.mapMarkerContainer}>
+                <Image
+                  style={styles.mapMarkerImage}
+                  source={{
+                    uri:
+                      "https://images.unsplash.com/photo-1590118681330-cc529d8c2032?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&q=60",
+                  }}
+                />
+                <Text style={styles.mapMarkerTitle}>Super Norte</Text>
+              </View>
+            </Marker>
+          </MapView>
         </View>
       </View>
       <View style={styles.itemsContainer}>
