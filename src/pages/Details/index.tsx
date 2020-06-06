@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -8,15 +8,40 @@ import {
   SafeAreaView,
 } from "react-native";
 import { Feather as Icon, FontAwesome } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Constants from "expo-constants";
 import { RectButton } from "react-native-gesture-handler";
+import * as MailComposer from "expo-mail-composer";
+
+import api from "../../services/api";
 
 const Details = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const routeParams = route.params as Params;
+
+  const [data, setData] = useState<Data>({} as Data);
+
+  useEffect(() => {
+    api
+      .get(`points/${routeParams.point_id}`)
+      .then((response) => setData(response.data));
+  }, []);
+
   const handleNavigateBack = () => {
     navigation.goBack();
   };
+
+  const handleComposerMail = () => {
+    MailComposer.composeAsync({
+      subject: "Interesse na coleta de resíduos",
+      recipients: [data.point.email],
+    });
+  };
+
+  if (!data.point) {
+    return null;
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -27,15 +52,18 @@ const Details = () => {
         <Image
           style={styles.pointImage}
           source={{
-            uri:
-              "https://images.unsplash.com/photo-1590118681330-cc529d8c2032?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&q=60",
+            uri: data.point.image,
           }}
         />
-        <Text style={styles.pointName}>Super Norte</Text>
-        <Text style={styles.pointItems}>Lâmpadas, Óleo de cozinha</Text>
+        <Text style={styles.pointName}>{data.point.name}</Text>
+        <Text style={styles.pointItems}>
+          {data.items.map((item) => item.title).join(", ")}
+        </Text>
         <View style={styles.address}>
           <Text style={styles.addressTitle}>Endereço</Text>
-          <Text style={styles.addressContent}>Mata de São João, BA</Text>
+          <Text style={styles.addressContent}>
+            {data.point.city}, {data.point.uf}
+          </Text>
         </View>
       </View>
       <View style={styles.footer}>
@@ -43,7 +71,7 @@ const Details = () => {
           <FontAwesome name="whatsapp" color="#ffffff" size={24} />
           <Text style={styles.buttonText}>Whatsapp</Text>
         </RectButton>
-        <RectButton style={styles.button} onPress={() => {}}>
+        <RectButton style={styles.button} onPress={handleComposerMail}>
           <Icon name="mail" color="#ffffff" size={24} />
           <Text style={styles.buttonText}>E-mail</Text>
         </RectButton>
@@ -125,5 +153,23 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto_500Medium",
   },
 });
+
+interface Params {
+  point_id: number;
+}
+
+interface Data {
+  point: {
+    image: string;
+    name: string;
+    email: string;
+    whatsapp: string;
+    city: string;
+    uf: string;
+  };
+  items: {
+    title: string;
+  }[];
+}
 
 export default Details;

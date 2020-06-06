@@ -80,7 +80,7 @@ const Points = () => {
         key={String(point.id)}
         style={styles.mapMarker}
         coordinate={{ latitude: point.latitude, longitude: point.longitude }}
-        onPress={handleNavigateToDetail}
+        onPress={() => handleNavigateToDetail(point.id)}
       >
         <View style={styles.mapMarkerContainer}>
           <Image
@@ -115,8 +115,8 @@ const Points = () => {
     navigation.goBack();
   };
 
-  const handleNavigateToDetail = () => {
-    navigation.navigate("Details");
+  const handleNavigateToDetail = (id: number) => {
+    navigation.navigate("Details", { point_id: id });
   };
 
   return (
