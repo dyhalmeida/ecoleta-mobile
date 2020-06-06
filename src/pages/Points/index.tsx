@@ -6,10 +6,12 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker } from "react-native-maps";
 import Constants from "expo-constants";
+import * as Location from "expo-location";
 import { SvgUri } from "react-native-svg";
 import { Feather as Icon } from "@expo/vector-icons";
 
@@ -18,8 +20,28 @@ import api from "../../services/api";
 const Points = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([0]);
+  const [initialPosition, setInitialPosition] = useState<[number, number]>([
+    0,
+    0,
+  ]);
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Ooooops",
+          "Precisamos de sua permissão para obter a localização"
+        );
+        return;
+      }
+      const location = await Location.getCurrentPositionAsync();
+      const { latitude, longitude } = location.coords;
+      setInitialPosition([latitude, longitude]);
+    })();
+  }, []);
 
   useEffect(() => {
     api
@@ -76,32 +98,34 @@ const Points = () => {
         </Text>
 
         <View style={styles.mapContainer}>
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: -12.5317127,
-              longitude: -38.2966778,
-              latitudeDelta: 0.014,
-              longitudeDelta: 0.014,
-            }}
-          >
-            <Marker
-              style={styles.mapMarker}
-              coordinate={{ latitude: -12.5317127, longitude: -38.2966778 }}
-              onPress={handleNavigateToDetail}
+          {initialPosition[0] !== 0 && (
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: initialPosition[0],
+                longitude: initialPosition[1],
+                latitudeDelta: 0.014,
+                longitudeDelta: 0.014,
+              }}
             >
-              <View style={styles.mapMarkerContainer}>
-                <Image
-                  style={styles.mapMarkerImage}
-                  source={{
-                    uri:
-                      "https://images.unsplash.com/photo-1590118681330-cc529d8c2032?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&q=60",
-                  }}
-                />
-                <Text style={styles.mapMarkerTitle}>Super Norte</Text>
-              </View>
-            </Marker>
-          </MapView>
+              <Marker
+                style={styles.mapMarker}
+                coordinate={{ latitude: -12.5317127, longitude: -38.2966778 }}
+                onPress={handleNavigateToDetail}
+              >
+                <View style={styles.mapMarkerContainer}>
+                  <Image
+                    style={styles.mapMarkerImage}
+                    source={{
+                      uri:
+                        "https://images.unsplash.com/photo-1590118681330-cc529d8c2032?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&q=60",
+                    }}
+                  />
+                  <Text style={styles.mapMarkerTitle}>Super Norte</Text>
+                </View>
+              </Marker>
+            </MapView>
+          )}
         </View>
       </View>
       <View style={styles.itemsContainer}>
