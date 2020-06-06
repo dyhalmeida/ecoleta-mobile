@@ -8,7 +8,7 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import MapView, { Marker } from "react-native-maps";
 import Constants from "expo-constants";
 import * as Location from "expo-location";
@@ -27,6 +27,8 @@ const Points = () => {
   ]);
 
   const navigation = useNavigation();
+  const route = useRoute();
+  const routeParams = route.params as Params;
 
   useEffect(() => {
     (async () => {
@@ -48,13 +50,13 @@ const Points = () => {
     api
       .get("points", {
         params: {
-          city: "Mata de São João",
-          uf: "BA",
-          items: [1, 2, 6],
+          city: routeParams.city,
+          uf: routeParams.uf,
+          items: selectedItems,
         },
       })
       .then((response) => setPoints(response.data));
-  }, []);
+  }, [selectedItems]);
 
   useEffect(() => {
     api
@@ -270,6 +272,11 @@ interface Item {
   title: string;
   image: string;
   image_url: string;
+}
+
+interface Params {
+  uf: string;
+  city: string;
 }
 
 export default Points;
