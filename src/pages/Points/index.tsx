@@ -18,6 +18,7 @@ import { Feather as Icon } from "@expo/vector-icons";
 import api from "../../services/api";
 
 const Points = () => {
+  const [points, setPoints] = useState<Point[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([0]);
   const [initialPosition, setInitialPosition] = useState<[number, number]>([
@@ -45,6 +46,18 @@ const Points = () => {
 
   useEffect(() => {
     api
+      .get("points", {
+        params: {
+          city: "Mata de São João",
+          uf: "BA",
+          items: [1, 2, 6],
+        },
+      })
+      .then((response) => setPoints(response.data));
+  }, []);
+
+  useEffect(() => {
+    api
       .get("items")
       .then((response) => response.data)
       .then((data: Item[]) => setItems(data));
@@ -59,6 +72,27 @@ const Points = () => {
     }
     setSelectedItems([...selectedItems, id]);
     return;
+  };
+
+  const handleMakersMap = () => {
+    return points.map((point) => (
+      <Marker
+        key={String(point.id)}
+        style={styles.mapMarker}
+        coordinate={{ latitude: point.latitude, longitude: point.longitude }}
+        onPress={handleNavigateToDetail}
+      >
+        <View style={styles.mapMarkerContainer}>
+          <Image
+            style={styles.mapMarkerImage}
+            source={{
+              uri: point.image,
+            }}
+          />
+          <Text style={styles.mapMarkerTitle}>{point.name}</Text>
+        </View>
+      </Marker>
+    ));
   };
 
   const handleTouchableOpacityItem = () => {
@@ -108,22 +142,7 @@ const Points = () => {
                 longitudeDelta: 0.014,
               }}
             >
-              <Marker
-                style={styles.mapMarker}
-                coordinate={{ latitude: -12.5317127, longitude: -38.2966778 }}
-                onPress={handleNavigateToDetail}
-              >
-                <View style={styles.mapMarkerContainer}>
-                  <Image
-                    style={styles.mapMarkerImage}
-                    source={{
-                      uri:
-                        "https://images.unsplash.com/photo-1590118681330-cc529d8c2032?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&q=60",
-                    }}
-                  />
-                  <Text style={styles.mapMarkerTitle}>Super Norte</Text>
-                </View>
-              </Marker>
+              {handleMakersMap()}
             </MapView>
           )}
         </View>
@@ -237,6 +256,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 });
+
+interface Point {
+  id: number;
+  name: string;
+  image: string;
+  latitude: number;
+  longitude: number;
+}
 
 interface Item {
   id: number;
