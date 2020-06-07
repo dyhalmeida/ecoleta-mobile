@@ -1,7 +1,8 @@
 [![Author](https://img.shields.io/badge/author-dyhalmeida-D54F44?style=flat-square)](https://github.com/dyhalmeida)
 [![Languages](https://img.shields.io/github/languages/count/dyhalmeida/dooper?color=%23D54F44&style=flat-square)](#)
 
-<h3 align="center"><strong>E-coleta</strong> is a project developed based on international environment week. That aims to connect people to companies that collect specific waste such as light bulbs, batteries, cooking oil, etc.</h3>
+<h3 align="center"><strong>E-coleta</strong><h3> 
+<h4 align="center">A project developed based on international environment week. That aims to connect people to companies that collect specific waste such as light bulbs, batteries, cooking oil, etc.</h4>
 
 <div align="center" >
   <img src="./.github/project.png" alt="E-coleta" width="650">
