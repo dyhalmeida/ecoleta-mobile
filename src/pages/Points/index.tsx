@@ -52,7 +52,7 @@ const Points = () => {
         params: {
           city: routeParams.city,
           uf: routeParams.uf,
-          items: selectedItems,
+          items: selectedItems.join(",").trim(),
         },
       })
       .then((response) => setPoints(response.data));
@@ -77,6 +77,7 @@ const Points = () => {
   };
 
   const handleMakersMap = () => {
+    points.map((point) => console.log(point));
     return points.map((point) => (
       <Marker
         key={String(point.id)}
